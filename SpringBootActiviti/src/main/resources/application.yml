@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: ZylLx930101
+    url: jdbc:mysql://127.0.0.1:3306/local?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf-8&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true
+  activiti:
+    db-history-used: true
+    deployment-mode: never-fail
+    history-level: full
+logging:
+  level:
+    org:
+      activiti:
+        engine:
+          impl:
+            persistence:
+              entity: debug

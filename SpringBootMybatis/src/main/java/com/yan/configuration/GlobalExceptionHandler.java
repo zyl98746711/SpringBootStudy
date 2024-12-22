@@ -14,6 +14,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public <T> ResponseBody<T> ExceptionHandler(Exception e) {
-        return ResponseBody.fail("请求异常");
+        return ResponseBody.fail("请求异常:" + e.getMessage());
     }
 }

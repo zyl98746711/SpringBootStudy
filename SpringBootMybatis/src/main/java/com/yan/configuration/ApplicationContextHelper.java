@@ -6,6 +6,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
 import java.util.Objects;
@@ -18,7 +19,7 @@ import lombok.Getter;
  * ApplicationContext 工具类 及 检查连接
  */
 @Getter
-//@Component
+@Component
 public class ApplicationContextHelper implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;

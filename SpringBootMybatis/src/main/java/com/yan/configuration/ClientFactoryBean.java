@@ -4,27 +4,14 @@ import org.springframework.beans.factory.FactoryBean;
 
 import java.lang.reflect.Proxy;
 
+import lombok.Data;
+
+@Data
 public class ClientFactoryBean implements FactoryBean<Object> {
 
     private String method;
 
     private String url;
-
-    public String getMethod() {
-        return method;
-    }
-
-    public void setMethod(String method) {
-        this.method = method;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
 
     @Override
     public Object getObject() throws Exception {

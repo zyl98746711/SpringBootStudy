@@ -28,10 +28,10 @@ public class ClientRegister implements ImportBeanDefinitionRegistrar {
                 .scan();
 
         BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(ClientFactoryBean.class);
-        
+
         scan.getClassesWithAnnotation(HttpClient.class.getName()).forEach(classInfo -> {
-            classInfo.getAnnotationInfo()
-                    .filter(info -> HttpClient.class.getName().equals(info.getName())).forEach(annotationInfo -> {
+            classInfo.getAnnotationInfo().filter(info -> HttpClient.class.getName().equals(info.getName()))
+                    .forEach(annotationInfo -> {
                         AnnotationParameterValueList parameterValues = annotationInfo.getParameterValues();
                         parameterValues.forEach(p -> {
                             String name = p.getName();
