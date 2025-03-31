@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResponseBodyEmitter Demo</title>
+</head>
+<body>
+<h1>Streaming Data Demo</h1>
+<div id="output"></div>
+
+<script>
+    // 创建 EventSource 连接到服务器端点
+    const eventSource = new EventSource('/api/stream');
+
+    // 监听服务器发送的数据
+    eventSource.onmessage = function (event) {
+        const output = document.getElementById('output');
+        output.innerHTML += event.data + '<br>';
+    };
+
+    // 监听错误事件
+    eventSource.onerror = function (event) {
+        console.error('EventSource failed:', event);
+        eventSource.close();
+    };
+</script>
+</body>
+</html>
