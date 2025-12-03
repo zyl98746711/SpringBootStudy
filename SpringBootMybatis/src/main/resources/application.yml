@@ -17,7 +17,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: ZylLx930101
-    url: jdbc:mysql://localhost:3306/local?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2b8&allowMultiQueries=true
+    url: jdbc:mysql://192.168.31.243:13306/local?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2b8&allowMultiQueries=true
   threads:
     virtual:
       enabled: true

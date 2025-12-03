@@ -2,16 +2,14 @@ package com.yan.service;
 
 import com.yan.listener.SignalResponseListener;
 import com.yan.util.SnowFlakeUtil;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-
-import lombok.RequiredArgsConstructor;
+import java.util.function.Supplier;
 
 @RequiredArgsConstructor
 @Service
@@ -21,11 +19,9 @@ public class IdService {
     private final SnowFlakeUtil snowFlakeUtil;
 
     public List<String> get(int num) {
-        AtomicReference<List<String>> result = new AtomicReference<>();
-        waitCallback((n) -> result.set(Arrays.stream(snowFlakeUtil.nextIds(n)).mapToObj(String::valueOf).toList()), message -> {
+        return waitCallback(() -> Arrays.stream(snowFlakeUtil.nextIds(num)).mapToObj(String::valueOf).toList(), message -> {
             throw new RuntimeException(message);
-        }, 10L, TimeUnit.SECONDS, "ABC", num);
-        return result.get();
+        }, 10L, TimeUnit.SECONDS, "ABC");
     }
 
     public void callback() {
@@ -33,7 +29,7 @@ public class IdService {
     }
 
 
-    private void waitCallback(SuccessCallback successCallback, FailCallback failCallback, Long time, TimeUnit timeUnit, String key, int num) {
+    private List<String> waitCallback(Supplier<List<String>> consumer, FailCallback failCallback, Long time, TimeUnit timeUnit, String key) {
         CountDownLatch latch = new CountDownLatch(1);
         try {
             new WaitThread(latch, key).start();
@@ -46,7 +42,7 @@ public class IdService {
         } finally {
             listener.remove(key);
         }
-        successCallback.call(num);
+        return consumer.get();
     }
 
     public class WaitThread extends Thread {

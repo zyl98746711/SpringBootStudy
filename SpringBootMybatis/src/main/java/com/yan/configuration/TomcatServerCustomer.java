@@ -1,12 +1,13 @@
 package com.yan.configuration;
 
 import org.apache.catalina.connector.Connector;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TomcatServerCustomer implements WebServerFactoryCustomizer<@org.jetbrains.annotations.NotNull TomcatServletWebServerFactory> {
+public class TomcatServerCustomer implements WebServerFactoryCustomizer<@NotNull TomcatServletWebServerFactory> {
 
     @Override
     public void customize(TomcatServletWebServerFactory factory) {

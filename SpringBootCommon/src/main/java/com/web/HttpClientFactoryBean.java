@@ -1,27 +1,25 @@
-package com.yan.configuration;
+package com.web;
 
+import lombok.Data;
 import org.springframework.beans.factory.FactoryBean;
 
 import java.lang.reflect.Proxy;
 
-import lombok.Data;
-
 @Data
-public class ClientFactoryBean implements FactoryBean<Object> {
+public class HttpClientFactoryBean implements FactoryBean<Object> {
 
     private String method;
-
     private String url;
+    private Class<?> type;
 
     @Override
     public Object getObject() throws Exception {
-        return Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[]{Client.class}, new MethodHandler(method, url));
-
+        return Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[]{type}, new HttpClientHandler(method, url));
     }
 
     @Override
     public Class<?> getObjectType() {
-        return Client.class;
+        return type;
     }
 
     @Override

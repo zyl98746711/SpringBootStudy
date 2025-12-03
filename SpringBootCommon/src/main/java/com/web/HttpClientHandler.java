@@ -1,24 +1,26 @@
-package com.yan.configuration;
+package com.web;
+
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import lombok.Data;
-
+@Slf4j
 @Data
-public class MethodHandler implements InvocationHandler {
+public class HttpClientHandler implements InvocationHandler {
 
     private String methodName;
 
     private String url;
 
-    public MethodHandler(String methodName, String url) {
+    public HttpClientHandler(String methodName, String url) {
         this.methodName = methodName;
         this.url = url;
     }
 
-    public MethodHandler() {
+    public HttpClientHandler() {
     }
 
     @Override
@@ -35,7 +37,7 @@ public class MethodHandler implements InvocationHandler {
                 return this.hashCode();
             }
         }
-        System.out.println("callback:" + method.getName() + ",method:" + methodName + ",url:" + url);
+        log.info("call method:{},methodName:{},url:{}", method.getName(), methodName, url);
         return this;
     }
 }
