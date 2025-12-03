@@ -1,29 +1,28 @@
 package com.yan.util;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import lombok.experimental.UtilityClass;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.PropertyNamingStrategy;
+import tools.jackson.databind.ext.javatime.deser.LocalDateDeserializer;
+import tools.jackson.databind.ext.javatime.deser.LocalDateTimeDeserializer;
+import tools.jackson.databind.ext.javatime.ser.LocalDateSerializer;
+import tools.jackson.databind.ext.javatime.ser.LocalDateTimeSerializer;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 
 @UtilityClass
 public class JsonUtil {
 
-    private static final ObjectMapper SNAKE_OBJECT_MAPPER = new ObjectMapper();
+    private static final JsonMapper SNAKE_OBJECT_MAPPER;
 
     private static final TypeReference<Map<String, Object>> MAP_TYPE_REFERENCE = new TypeReference<>() {
     };
@@ -37,9 +36,11 @@ public class JsonUtil {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         module.addSerializer(LocalDate.class, new LocalDateSerializer(dateFormatter));
         module.addDeserializer(LocalDate.class, new LocalDateDeserializer(dateFormatter));
-        SNAKE_OBJECT_MAPPER.registerModule(module);
-        SNAKE_OBJECT_MAPPER.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
-        SNAKE_OBJECT_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        PropertyNamingStrategy snakeCase = PropertyNamingStrategies.SNAKE_CASE;
+        SNAKE_OBJECT_MAPPER = JsonMapper.builder().propertyNamingStrategy(snakeCase)
+                .addModule(module)
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .build();
 
     }
 
@@ -52,7 +53,7 @@ public class JsonUtil {
     public static String toJsonString(Object object) {
         try {
             return SNAKE_OBJECT_MAPPER.writeValueAsString(object);
-        } catch (JsonProcessingException ex) {
+        } catch (JacksonException ex) {
             throw new RuntimeException("Json序列化失败：" + ex.getMessage());
         }
     }
@@ -69,7 +70,7 @@ public class JsonUtil {
     public static <T> T toJavaObject(String value, TypeReference<?> typeReference) {
         try {
             return (T) SNAKE_OBJECT_MAPPER.readValue(value, typeReference);
-        } catch (IOException ex) {
+        } catch (JacksonException ex) {
             throw new RuntimeException("Json反序列化失败：" + ex.getMessage());
         }
     }
@@ -85,7 +86,7 @@ public class JsonUtil {
     public static <T> T toJavaObject(String value, Class<T> type) {
         try {
             return SNAKE_OBJECT_MAPPER.readValue(value, type);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException("Json反序列化失败：" + e.getMessage());
         }
     }

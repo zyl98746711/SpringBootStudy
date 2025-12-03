@@ -1,29 +1,229 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ResponseBodyEmitter Demo</title>
+    <title>SSE 流式接口调试工具</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 8px 16px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        #connectBtn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        #disconnectBtn {
+            background-color: #f44336;
+            color: white;
+            display: none;
+        }
+        .logs {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            height: 400px;
+            overflow-y: auto;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-family: 'Courier New', monospace;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #2196F3;
+        }
+        .log-error {
+            border-left-color: #f44336;
+            color: #f44336;
+        }
+        .log-info {
+            border-left-color: #2196F3;
+        }
+        .status {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+        .progress-container {
+            width: 100%;
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 0%;
+            transition: width 0.3s ease;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+            font-size: 12px;
+        }
+    </style>
 </head>
 <body>
-<h1>Streaming Data Demo</h1>
-<div id="output"></div>
+    <h1>SSE 流式接口调试工具</h1>
+    
+    <div class="controls">
+        <button id="connectBtn">连接 /stream</button>
+        <button id="disconnectBtn">断开连接</button>
+        <div id="connectionStatus" class="status">状态: 未连接</div>
+        
+        <h3>进度显示</h3>
+        <div class="progress-container">
+            <div id="progressBar" class="progress-bar">0%</div>
+        </div>
+    </div>
+    
+    <div class="logs" id="logContainer">
+        <div class="log-entry log-info">调试日志将显示在这里</div>
+    </div>
 
-<script>
-    // 创建 EventSource 连接到服务器端点
-    const eventSource = new EventSource('/api/stream');
-
-    // 监听服务器发送的数据
-    eventSource.onmessage = function (event) {
-        const output = document.getElementById('output');
-        output.innerHTML += event.data + '<br>';
-    };
-
-    // 监听错误事件
-    eventSource.onerror = function (event) {
-        console.error('EventSource failed:', event);
-        eventSource.close();
-    };
-</script>
+    <script>
+        let eventSource = null;
+        const connectBtn = document.getElementById('connectBtn');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const statusDisplay = document.getElementById('connectionStatus');
+        const logContainer = document.getElementById('logContainer');
+        const progressBar = document.getElementById('progressBar');
+        
+        // 添加日志条目
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.innerHTML = `<strong>[${timestamp}]</strong> ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        // 更新进度条
+        function updateProgress(progress) {
+            const percent = parseInt(progress);
+            if (!isNaN(percent)) {
+                progressBar.style.width = `${percent}%`;
+                progressBar.textContent = `${percent}%`;
+            }
+        }
+        
+        // 连接SSE
+        function connect() {
+            try {
+                addLog('正在连接到 /stream...');
+                
+                // 创建 EventSource 连接到服务器端点
+                eventSource = new EventSource('/stream');
+                
+                // 监听连接打开
+                eventSource.onopen = function() {
+                    addLog('连接已建立');
+                    statusDisplay.textContent = '状态: 已连接';
+                    connectBtn.style.display = 'none';
+                    disconnectBtn.style.display = 'inline-block';
+                };
+                
+                // 监听服务器发送的数据
+                eventSource.onmessage = function(event) {
+                    const data = event.data;
+                    addLog(`收到数据: ${data}`);
+                    
+                    // 兼容两种数据格式：纯数字或Progress格式
+                    if (data.trim() === 'completed') {
+                        // 如果收到完成消息
+                        addLog('任务完成！');
+                    } else {
+                        // 尝试直接解析数字
+                        const numProgress = parseInt(data.trim());
+                        if (!isNaN(numProgress)) {
+                            updateProgress(numProgress);
+                        } else if (data.includes('Progress:')) {
+                            // 同时兼容旧的Progress格式
+                            const progressMatch = data.match(/Progress:\s*(\d+)%?/);
+                            if (progressMatch && progressMatch[1]) {
+                                updateProgress(progressMatch[1]);
+                            }
+                        }
+                    }
+                };
+                
+                // 监听错误事件
+                eventSource.onerror = function(event) {
+                    // 检查是否是正常关闭的连接
+                    if (event.target.readyState === EventSource.CLOSED) {
+                        // 正常关闭不显示错误，而是显示完成信息
+                        addLog('连接已正常关闭');
+                        resetUI();
+                    } else {
+                        addLog('连接出现错误', 'error');
+                        console.error('EventSource error:', event);
+                    }
+                };
+                
+                // 监听完成事件（可选，不是所有浏览器都支持）
+                eventSource.onclose = function() {
+                    addLog('连接已完成关闭');
+                };
+                
+            } catch (error) {
+                addLog(`连接失败: ${error.message}`, 'error');
+                console.error('Connection error:', error);
+            }
+        }
+        
+        // 断开连接
+        function disconnect() {
+            if (eventSource) {
+                addLog('正在断开连接...');
+                eventSource.close();
+                eventSource = null;
+                resetUI();
+                addLog('连接已断开');
+            }
+        }
+        
+        // 重置UI状态
+        function resetUI() {
+            statusDisplay.textContent = '状态: 未连接';
+            connectBtn.style.display = 'inline-block';
+            disconnectBtn.style.display = 'none';
+            progressBar.style.width = '0%';
+            progressBar.textContent = '0%';
+        }
+        
+        // 按钮事件监听
+        connectBtn.addEventListener('click', connect);
+        disconnectBtn.addEventListener('click', disconnect);
+        
+        // 页面加载完成时的提示
+        window.addEventListener('load', function() {
+            addLog('页面加载完成，请点击连接按钮开始测试');
+            addLog('服务器将每秒发送一次进度更新，总共10次');
+        });
+    </script>
 </body>
 </html>

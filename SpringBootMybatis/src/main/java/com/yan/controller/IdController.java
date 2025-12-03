@@ -23,7 +23,7 @@ public class IdController {
     private final IdService idService;
 
 
-    @GetMapping("{num}")
+    @GetMapping("/{num}")
     public List<String> getIds(@PathVariable("num") Integer num) {
         //  client.sayHello();
         return idService.get(num);
