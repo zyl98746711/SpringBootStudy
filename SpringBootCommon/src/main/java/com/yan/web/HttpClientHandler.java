@@ -1,11 +1,11 @@
-package com.web;
-
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
+package com.yan.web;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Data
@@ -36,7 +36,14 @@ public class HttpClientHandler implements InvocationHandler {
             case "hashCode" -> {
                 return this.hashCode();
             }
+            default -> {
+                return callMethod(method, args);
+            }
         }
+
+    }
+
+    private Object callMethod(Method method, Object[] args) {
         log.info("call method:{},methodName:{},url:{}", method.getName(), methodName, url);
         return this;
     }

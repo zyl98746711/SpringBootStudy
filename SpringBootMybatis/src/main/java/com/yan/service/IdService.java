@@ -2,7 +2,7 @@ package com.yan.service;
 
 import com.yan.listener.SignalResponseListener;
 import com.yan.util.SnowFlakeUtil;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service

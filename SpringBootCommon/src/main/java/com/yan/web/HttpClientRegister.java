@@ -1,14 +1,15 @@
-package com.web;
+package com.yan.web;
 
-import io.github.classgraph.AnnotationParameterValueList;
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ScanResult;
-import jakarta.annotation.Nonnull;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
+
+import io.github.classgraph.AnnotationParameterValueList;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ScanResult;
+import jakarta.annotation.Nonnull;
 
 public class HttpClientRegister implements ImportBeanDefinitionRegistrar {
 

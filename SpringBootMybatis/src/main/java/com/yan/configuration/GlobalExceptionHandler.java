@@ -1,6 +1,7 @@
 package com.yan.configuration;
 
-import com.common.ResponseBody;
+import com.yan.common.ResponseBody;
+
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 

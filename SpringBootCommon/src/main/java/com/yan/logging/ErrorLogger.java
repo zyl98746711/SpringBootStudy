@@ -1,14 +1,14 @@
-package com.logging;
+package com.yan.logging;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * app日志
+ * Error日志
  */
-public class AppLogger {
+public class ErrorLogger {
 
-    private static final String NAME = "appLogger";
+    private static final String NAME = "errorLogger";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NAME);
 
@@ -17,12 +17,10 @@ public class AppLogger {
     }
 
     public static void log(String msg) {
-        LOGGER.info(msg);
+        LOGGER.error(msg);
     }
 
     public static void log(String format, Object obj) {
-        LOGGER.info(format, obj);
+        LOGGER.error(format, obj);
     }
-
-
 }

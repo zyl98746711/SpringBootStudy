@@ -1,9 +1,10 @@
-package com.web;
+package com.yan.web;
 
-import lombok.Data;
 import org.springframework.beans.factory.FactoryBean;
 
 import java.lang.reflect.Proxy;
+
+import lombok.Data;
 
 @Data
 public class HttpClientFactoryBean implements FactoryBean<Object> {

@@ -1,4 +1,4 @@
-package com.common;
+package com.yan.common;
 
 /**
  * 响应体

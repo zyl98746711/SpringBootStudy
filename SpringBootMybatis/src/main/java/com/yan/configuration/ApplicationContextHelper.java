@@ -1,16 +1,19 @@
 package com.yan.configuration;
 
-import com.logging.ErrorLogger;
-import lombok.Getter;
+import com.yan.logging.ErrorLogger;
+
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Objects;
+
+import javax.sql.DataSource;
+
+import lombok.Getter;
 
 /**
  * ApplicationContext 工具类 及 检查连接

@@ -26,13 +26,19 @@
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-core</artifactId>
+            <version>3.5.0</version>
+        </dependency>
 
-
+        <!-- runtime 作用域，只在运行时用 排查spring boot 版本兼容性 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-properties-migrator</artifactId>
-            <scope>runtime</scope>  <!-- runtime 作用域，只在运行时用 -->
+            <scope>runtime</scope>
         </dependency>
+
     </dependencies>
 
     <properties>
@@ -70,6 +76,7 @@
                 <configuration>
                     <source>21</source>
                     <target>21</target>
+                    <compilerArgs>--enable-preview</compilerArgs>
                 </configuration>
             </plugin>
         </plugins>
